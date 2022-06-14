@@ -66,6 +66,7 @@ wzmetagene <- function(bedfile,
   input_bed <- read.table(bedfile, header = F)
   if (ncol(input_bed) == 3) {
     colnames(input_bed) <- header[1:3]
+    opts$strand <- NULL
   } else {
       colnames(input_bed) <- header
   }
@@ -129,7 +130,7 @@ process_record <- function(cur_record, previous_record, next_record, opts) {
   if (is.null(opts$strand)) {
     strand <- "+"
   } else {
-    strand <- cur_record[opts$strand]
+    strand <- cur_record$strand
   }
 
   if (opts$ignoreend) {
@@ -259,8 +260,8 @@ sample_backward <- function(cur_record, index_func, opts) {
     if (window_beg > 0 && window_end > window_beg) {
       cat(paste(
         cur_record$chr,
-        window_beg,
-        window_end,
+        as.integer(window_beg),
+        as.integer(window_end),
         index,
         reg,
         area,
@@ -369,8 +370,8 @@ sample_forward <- function(cur_record, index_func, opts) {
     if (window_beg > 0 && window_end > window_beg) {
       cat(paste(
         cur_record$chr,
-        window_beg,
-        window_end,
+        as.integer(window_beg),
+        as.integer(window_end),
         index,
         reg,
         area,
@@ -413,8 +414,8 @@ sample_internal <- function(cur_record, index_func, opts) {
       if (window_beg > 0 && window_end > window_beg) {
         cat(paste(
           cur_record$chr,
-          window_beg,
-          window_end,
+          as.integer(window_beg),
+          as.integer(window_end),
           index,
           paste0(
             as.integer(index / opts$numinternal * 100),
@@ -455,8 +456,8 @@ sample_internal <- function(cur_record, index_func, opts) {
         if (window_beg > 0 && window_end > window_beg) {
           cat(paste(
             cur_record$chr,
-            window_beg,
-            window_end,
+            as.integer(window_beg),
+            as.integer(window_end),
             index,
             paste0(
               as.integer(index / opts$numinternal * 100),
