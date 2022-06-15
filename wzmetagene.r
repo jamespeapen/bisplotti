@@ -192,55 +192,49 @@ sample_backward <- function(cur_record, index_func, opts) {
     index <- index_func(i)
     if (index < 0) {
       if (opts$flankbygene) {
-        reg <- paste0("(", -i - 1, ")-(", -i, ")")
+        reg <- sprintf("(%d)-(%d)", -i - 1, -i)
       } else if (opts$flanktoneighbor) {
         if (opts$fold) {
-          reg <- paste0(
-            "(",
+          reg <- sprintf(
+            "(%d)-(%d)",
             as.integer(-i - 1 / opts$flanknumber / 2 * 100),
-            ")-(",
-            as.integer(-i / opts$flanknumber / 2 * 100),
-            ")"
+            as.integer(-i / opts$flanknumber / 2 * 100)
           )
         } else {
-          reg <- paste0(
-            "(",
+          reg <- sprintf(
+            "(%d)-(%d)",
             as.integer(-i - 1 / opts$flanknumber * 100),
-            ")-(",
-            as.integer(-i / opts$flanknumber * 100),
-            ")"
+            as.integer(-i / opts$flanknumber * 100)
           )
         }
       } else {
-        reg <- paste0(
-            "(",
+        reg <- sprintf(
+            "(%d)-(%d)",
             as.integer(window_beg - cur_record$start),
-            ")-(",
-            as.integer(window_end - cur_record$start),
-            ")"
+            as.integer(window_end - cur_record$start)
         )
       }
     } else {
       if (opts$flankbygene) {
-        reg <- paste0(i, "-", i + 1)
+        reg <- sprintf("%d-%d", i, i + 1)
       } else if (opts$flanktoneighbor) {
         if (opts$fold) {
-          reg <- paste0(
+          reg <- sprintf(
+            "%d-%d",
             as.integer(i / opts$flanknumber / 2 * 100),
-            "-",
             as.integer(i + 1 / opts$flanknumber / 2 * 100)
           )
         } else {
-          reg <- paste0(
+          reg <- sprintf(
+            "%d-%d",
             as.integer(i / opts$flanknumber * 100),
-            "-",
             as.integer(i + 1 / opts$flanknumber * 100)
           )
         }
       } else {
-        reg <- paste0(
+        reg <- sprintf(
+          "%d-%d",
           as.integer(cur_record$start - window_end),
-          "-",
           as.integer(cur_record$start - window_beg)
         )
       }
@@ -258,19 +252,19 @@ sample_backward <- function(cur_record, index_func, opts) {
     }
 
     if (window_beg > 0 && window_end > window_beg) {
-      cat(paste(
-        cur_record$chr,
-        as.integer(window_beg),
-        as.integer(window_end),
-        index,
-        reg,
-        area,
-        cur_record$chr,
-        cur_record$og_start,
-        cur_record$og_end,
-        cur_record$strand,
-        sep = "\t"
-      ), sep="\n")
+      (sprintf(
+          "%s\t%d\t%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
+          cur_record$chr,
+          as.integer(window_beg),
+          as.integer(window_end),
+          index,
+          reg,
+          area,
+          cur_record$chr,
+          cur_record$og_start,
+          cur_record$og_end,
+          cur_record$strand
+      ))
     }
 
     temp_window_end <- temp_window_beg
@@ -311,46 +305,40 @@ sample_forward <- function(cur_record, index_func, opts) {
 
     if (index < 0) {
       if (opts$flankbygene) {
-        reg <- paste0("(", -i - 1, ")-(", -i, ")")
+        reg <- sprintf("(%d)-(%d)", -i - 1, -i)
       } else if (opts$flanktoneighbor) {
         if (opts$fold) {
-          reg <- paste0(
-            "(",
+          reg <- sprintf(
+            "(%d)-(%d)",
             as.integer(-i - 1 / opts$flanknumber / 2 * 100),
-            ")-(",
-            as.integer(-i / opts$flanknumber / 2 * 100),
-            ")"
+            as.integer(-i / opts$flanknumber / 2 * 100)
           )
         } else {
-          reg <- paste0(
-            "(",
+          reg <- sprintf(
+            "(%d)-(%d)",
             as.integer(-i - 1 / opts$flanknumber * 100),
-            ")-(",
-            as.integer(-i / opts$flanknumber * 100),
-            ")"
+            as.integer(-i / opts$flanknumber * 100)
           )
         }
       } else {
-        reg <- paste0(
-          "(",
+        reg <- sprintf(
+          "(%d)-(%d)",
           as.integer(cur_record$end - window_end),
-          ")-(",
-          as.integer(cur_record$end - window_beg),
-          ")"
+          as.integer(cur_record$end - window_beg)
         )
       }
     } else {
       if (opts$flankbygene) {
-        reg <- paste0(i, "-", i + 1)
+        reg <- sprintf("%d-%d", i, i + 1)
       } else if (opts$flanktoneighbor) {
-        reg <- paste0(
+        reg <- sprintf(
+          "%d-%d",
           as.integer(i / opts$flanknumber * 100),
           as.integer((i + 1) / opts$flanknumber * 100)
         )
       } else {
-        reg <- paste0(
+        reg <- sprintf("%d-%d",
             as.integer(window_beg - cur_record$end),
-            "-",
             as.integer(window_end - cur_record$end)
         )
       }
@@ -368,7 +356,8 @@ sample_forward <- function(cur_record, index_func, opts) {
     }
 
     if (window_beg > 0 && window_end > window_beg) {
-      cat(paste(
+      (sprintf(
+        "%s\t%d\t%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
         cur_record$chr,
         as.integer(window_beg),
         as.integer(window_end),
@@ -378,9 +367,8 @@ sample_forward <- function(cur_record, index_func, opts) {
         cur_record$chr,
         cur_record$og_start,
         cur_record$og_end,
-        cur_record$strand,
-        sep = "\t"
-      ), sep="\n")
+        cur_record$strand
+      ))
     }
 
     temp_window_beg <- temp_window_end
@@ -412,23 +400,18 @@ sample_internal <- function(cur_record, index_func, opts) {
       index <- index_func(i)
 
       if (window_beg > 0 && window_end > window_beg) {
-        cat(paste(
+        (sprintf("%s\t%d\t%d\t%s\t%d-%d\t0\t%s\t%s\t%s\t%s\n",
           cur_record$chr,
           as.integer(window_beg),
           as.integer(window_end),
           index,
-          paste0(
-            as.integer(index / opts$numinternal * 100),
-            "-",
-            as.integer((index + 1) / opts$numinternal * 100),
-            "%"),
-          0,
+          as.integer(index / opts$numinternal * 100),
+          as.integer((index + 1) / opts$numinternal * 100),
           cur_record$chr,
           cur_record$og_start,
           cur_record$og_end,
-          cur_record$strand,
-          sep = "\t"
-        ), sep="\n")
+          cur_record$strand
+        ))
       }
     }
   } else {
@@ -454,23 +437,18 @@ sample_internal <- function(cur_record, index_func, opts) {
         index <- index_func(i)
 
         if (window_beg > 0 && window_end > window_beg) {
-          cat(paste(
+          (sprintf("%s\t%d\t%d\t%s\t%d-%d\t0\t%s\t%s\t%s\t%s\n",
             cur_record$chr,
             as.integer(window_beg),
             as.integer(window_end),
             index,
-            paste0(
-              as.integer(index / opts$numinternal * 100),
-              "-",
-              as.integer((index + 1) / opts$numinternal * 100),
-              "%"),
-            0,
+            as.integer(index / opts$numinternal * 100),
+            as.integer((index + 1) / opts$numinternal * 100),
             cur_record$chr,
             cur_record$og_start,
             cur_record$og_end,
-            cur_record$strand,
-            sep = "\t"
-          ), sep = "\n")
+            cur_record$strand
+          ))
         }
       }
   }
