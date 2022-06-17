@@ -21,6 +21,7 @@
 #' @return
 #'
 #' @examples
+library('parallel')
 wzmetagene <- function(bedfile,
                        middle = F,
                        outer = F,
@@ -33,7 +34,8 @@ wzmetagene <- function(bedfile,
                        numinternal = 30,
                        fold = F,
                        strand = NULL,
-                       ignoreend = F) {
+                       ignoreend = F,
+                       cores = 1) {
   opts <- list(
     middle = middle,
     outer = outer,
@@ -46,7 +48,8 @@ wzmetagene <- function(bedfile,
     numinternal = numinternal,
     fold = fold,
     strand = strand,
-    ignoreend = ignoreend
+    ignoreend = ignoreend,
+    cores = cores
   )
 
   if (opts$collapse) {
@@ -83,12 +86,12 @@ wzmetagene <- function(bedfile,
   input_bed$step1 <- flankstep
   input_bed$step2 <- flankstep
 
-  ctcf <- lapply(seq_len(nrow(input_bed)), function(i) {
+  ctcf <- mclapply(seq_len(nrow(input_bed)), function(i) {
     cur_record <- input_bed[i, ]
     prev_record <- input_bed[i - 1, ]
     next_record <- input_bed[i + 1, ]
     process_record(cur_record, prev_record, next_record, opts)
-  })
+  }, mc.cores = opts$cores)
   write.table(do.call(rbind, ctcf), "result.txt", row.names=F, col.names=F, quote=F, sep="\t")
   
 }
