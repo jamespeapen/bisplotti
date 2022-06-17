@@ -151,10 +151,10 @@ process_record <- function(cur_record, previous_record, next_record, opts) {
   if (strand == "+") {
     sb <- sample_backward(cur_record, function(i) { -i }, opts) # removed -1 since 1 base
     si <- sample_internal(cur_record, function(i) { i - 1 }, opts) # -1 to offset 1 base and get a 0 start
-    sf <- sample_forward(cur_record, function(i) { opts$numinternal + i }, opts)
+    sf <- sample_forward(cur_record, function(i) { opts$numinternal + i - 1 }, opts)
     return(rbind(sb, si, sf))
   } else {
-    sf <- sample_forward(cur_record, function(i) { -i - 1 }, opts)
+    sf <- sample_forward(cur_record, function(i) { -i }, opts)
     si <- sample_internal(cur_record, function(i) { opts$numinternal - i }, opts)
     sb <- sample_backward(cur_record, function(i) { opts$numinternal + i - 1 }, opts)
     return(rbind(sf, si, sb))
@@ -236,7 +236,7 @@ sample_backward <- function(cur_record, index_func, opts) {
       window_end <- window_end + opts$expansion
     }
 
-    temp_window_end <- temp_window_beg
+    temp_window_end <<- temp_window_beg
 
     if (window_beg > 0 && window_end > window_beg) {
       c(
@@ -270,7 +270,7 @@ sample_forward <- function(cur_record, index_func, opts) {
   }
 
   temp_window_beg <- cur_record$end
-    result <- lapply(seq_len(opts$flanknumber - 1), function(i) {
+    result <- lapply(seq_len(opts$flanknumber), function(i) {
       temp_window_end <- temp_window_beg + cur_record$step2
 
       if (opts$outer) {
@@ -327,7 +327,7 @@ sample_forward <- function(cur_record, index_func, opts) {
         window_end <- window_end + opts$expansion
       }
 
-      temp_window_beg <- temp_window_end
+      temp_window_beg <<- temp_window_end
 
       if (window_beg > 0 && window_end > window_beg) {
         c(
